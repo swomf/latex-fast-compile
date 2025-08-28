@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
   strcat(cmd, cmd_make_preamble);
   strcat(cmd, file_path);
 
-  color_fprintf(stdout, "Compiling preamble with %s\n", cmd);
+  color_fprintf(stdout, "Compiling preamble with %s...\n", cmd);
   if (system(cmd) != 0) {
     color_fprintf(stderr, "Failed to compile preamble.%s\n", "");
     exit(1);
@@ -76,7 +76,9 @@ int main(int argc, char **argv) {
   memset(cmd, 0, (50 + strlen(file_path)) * sizeof(char));
   strcat(cmd, cmd_use_preamble);
   strcat(cmd, file_path);
+  color_fprintf(stdout, "Compiling %s for the first time...\n", file_path);
   system(cmd);
+  color_fprintf(stdout, "Compiled %s.\n", file_path);
 
   color_fprintf(stdout, "Watching %s...\n", file_path);
 
@@ -96,8 +98,12 @@ int main(int argc, char **argv) {
       i += EVENT_SIZE + event->len;
 
       int is_file_arg = strcmp(event->name, basename(file_path)) == 0 ? 1 : 0;
-      if (event->mask & IN_MODIFY && !(event->mask & IN_ISDIR) && is_file_arg)
+      if (event->mask & IN_MODIFY && !(event->mask & IN_ISDIR) && is_file_arg) {
+        color_fprintf(stdout, "Detected change. Recompiling %s...\n",
+                      file_path);
         system(cmd);
+        color_fprintf(stdout, "Compiled %s.\n", file_path);
+      }
     }
   }
 
