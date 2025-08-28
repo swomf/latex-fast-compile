@@ -12,3 +12,7 @@ install: $(PROG)
 uninstall:
 	$(RM) $(DESTDIR)$(PREFIX)/bin/$(PROG)
 	$(RM) $(DESTDIR)$(PREFIX)/share/man/man1/$(PROG).1
+
+.PHONY: clean
+clean:
+	$(RM) $(PROG)
