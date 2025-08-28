@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
   memset(cmd, 0, (50 + strlen(file_path)) * sizeof(char));
   strcat(cmd, cmd_use_preamble);
   strcat(cmd, file_path);
+  system(cmd);
 
   color_fprintf(stdout, "Watching %s...\n", file_path);
 
