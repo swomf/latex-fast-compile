@@ -1,0 +1,31 @@
+.TH latex-fast-compile "1" "August 2025" "" ""
+.SH NAME
+latex-fast-compile \- a LaTeX watcher with preamble precompilation support
+.SH SYNOPSIS
+.B latex-fast-compile
+[\fI\,FILE\/\fR]
+.SH DESCRIPTION
+.PP
+Precompile the "static" preamble in a .tex file into a
+preamble.fmt, then watch the file for changes, compiling on edit.
+.PP
+The "static" preamble, referring to the area of the preamble
+to keep the same during pdflatex recompilations, is
+before '\\begindocument' or '\\endofdump', whichever comes first.
+It is typical, for example, to place '\\endofdump' before a
+Table of Contents setup.
+.PP
+If your document fails to compile, pass \fB^D\fR\| (an EOF,
+typically Control+D) to pass over the error.
+.SH AUTHOR
+Written by swomf <swomf@proton.me>
+.SH "REPORTING BUGS"
+Report any bugs to <https://github.com/swomf/latex-fast-compile/issues>
+.SH "COPYRIGHT"
+Copyright \(co 2025 swomf.
+.br
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+.br
+There is NO WARRANTY, to the extent permitted by law.

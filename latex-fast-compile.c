@@ -16,7 +16,8 @@
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    fprintf(stderr, "Usage: latex-fast-compile <filename>\n");
+    fprintf(stderr, "Usage: latex-fast-compile <filename>\n"
+                    "See 'man latex-fast-compile'.\n");
     exit(EXIT_FAILURE);
   }
   char *file_path = argv[1];
