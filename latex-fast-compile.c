@@ -11,6 +11,8 @@
 
 #define EVENT_SIZE (sizeof(struct inotify_event))
 
+// the actual commands (excluding filename, e.g. main.tex).
+// if you want to integrate this into a different workflow, use these.
 #define cmd_make_preamble                                                      \
   "pdflatex -ini -jobname=preamble \"&pdflatex\" mylatexformat.ltx "
 #define cmd_use_preamble "pdflatex -fmt preamble "
@@ -24,8 +26,8 @@ static inline int color_fprintf(FILE *stream, char *format_str, char *str) {
   fprintf(stream, format_str, str);
   // FIXME: the two lines below should be replaced with
   //          if (isatty(fileno(stream)) fprintf(stream, "\033[0m");
-  //        but this doesn't seem to reset the color code to default
-
+  //        but in testing this doesn't seem to reset the color code to default
+  //        :/
   if (isatty(fileno(stdout)))
     fprintf(stdout, "\033[0m");
   if (isatty(fileno(stderr)))
@@ -41,7 +43,7 @@ int main(int argc, char **argv) {
   }
   char *file_path = argv[1];
 
-  // file exists
+  // make sure file exists
   FILE *file = fopen(file_path, "r");
   if (file == NULL) {
     color_fprintf(stderr, "Couldn't find file: %s\n", strerror(errno));
@@ -59,7 +61,7 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  // Watch its dir. https://unix.stackexchange.com/a/312359
+  // Watch its dir using inotify. https://unix.stackexchange.com/a/312359
   wd = inotify_add_watch(fd, dirname(file_path), IN_MODIFY | IN_DELETE);
 
   char *cmd = malloc(64 + strlen(file_path));
@@ -82,6 +84,7 @@ int main(int argc, char **argv) {
 
   color_fprintf(stdout, "Watching %s...\n", file_path);
 
+  // start infinite watch, recompiling whenever file changes
   while (1) {
     i = 0;
     length = read(fd, buf, EVENT_SIZE + NAME_MAX);
@@ -107,6 +110,9 @@ int main(int argc, char **argv) {
     }
   }
 
+  // TODO: this is unreachable, since i don't have logic to
+  // break the loop cleanly on file deletion. however,
+  // modern linux cleans this stuff up anyway.
   inotify_rm_watch(fd, wd);
   close(fd);
 

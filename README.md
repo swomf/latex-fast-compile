@@ -64,6 +64,17 @@ pdflatex -ini -jobname=preamble "&pdflatex" mylatexformat.ltx main.tex
 pdflatex -fmt preamble main.tex
 ```
 
+You can read the code yourself in [`latex-fast-compile.c`](./latex-fast-compile.c).
+It is well-commented and follows this pseudocode:
+
+```
+compile preamble
+compile using preamble
+loop forever:
+  wait until edit
+  compile using preamble
+```
+
 ## license
 
 GPLv3
