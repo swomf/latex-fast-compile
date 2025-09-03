@@ -2,7 +2,7 @@
 
 `latex-fast-compile` is a Linux helper for the following $\LaTeX$ workflow:
 
-1. Precompile the "preamble" of a given `.tex` file (i.e. the part before `\endofdump` or `\begin{document}`, whichever comes first)
+1. Precompile the "preamble" of a given `.tex` file (i.e. the part before `\csname endofdump \endcsname` or `\begin{document}`, whichever comes first)
 2. Create a file descriptor watch using `inotify`, to bind an action whenever the given `.tex` file changes
 3. The action: When the `.tex` file updates, compile the file, using the precompiled preamble to save time
 
@@ -33,12 +33,12 @@ Use Control+D to skip over a $\LaTeX$ compilation error. Use Control+C to quit.
 
 Any $\LaTeX$ in the preamble you'd prefer to regenerate? Separate
 the "static" precompiled area and the "dynamic" compile-every-time area
-using `\endofdump`.
+using `\csname endofdump \endcsname`.
 
 ```latex
 % "Static" preamble
 \some_stuff_like_the_page_header
-\endofdump % Ends the "static" preamble
+\csname endofdump \endcsname % Ends the "static" preamble
 % "Dynamic" preamble
 \stuff_that_changes_like_minitoc
 \begin{document} % End of preamble, document starts

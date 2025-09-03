@@ -1,4 +1,4 @@
-.TH latex-fast-compile "1" "August 2025" "" ""
+.TH latex-fast-compile "1" "September 2025" "" ""
 .SH NAME
 latex-fast-compile \- a LaTeX watcher with preamble precompilation support
 .SH SYNOPSIS
@@ -11,12 +11,14 @@ preamble.fmt, then watch the file for changes, compiling on edit.
 .PP
 The "static" preamble, referring to the area of the preamble
 to keep the same during pdflatex recompilations, is
-before '\\begindocument' or '\\endofdump', whichever comes first.
+before '\\begin{document}' or '\\csname endofdump \\endcsname', whichever comes first.
 It is typical, for example, to place '\\endofdump' before a
 Table of Contents setup.
 .PP
 If your document fails to compile, pass \fB^D\fR\| (an EOF,
 typically Control+D) to pass over the error.
+.SH "SEE ALSO"
+How 'endofdump' works: https://ctan.org/tex-archive/macros/latex/contrib/mylatexformat
 .SH AUTHOR
 Written by swomf <swomf@proton.me>
 .SH "REPORTING BUGS"
