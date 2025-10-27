@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
   wd = inotify_add_watch(fd, dirname(file_path), IN_MODIFY | IN_DELETE);
 
   char *cmd = malloc(64 + strlen(file_path));
-  strcat(cmd, cmd_make_preamble);
+  strcpy(cmd, cmd_make_preamble);
   strcat(cmd, file_path);
 
   color_fprintf(stdout, "Compiling preamble with %s...\n", cmd);
