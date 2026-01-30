@@ -9,13 +9,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define EVENT_SIZE (sizeof(struct inotify_event))
+static int EVENT_SIZE = sizeof(struct inotify_event);
 
 // the actual commands (excluding filename, e.g. main.tex).
 // if you want to integrate this into a different workflow, use these.
-#define cmd_make_preamble                                                      \
-  "pdflatex -ini -jobname=preamble \"&pdflatex\" mylatexformat.ltx "
-#define cmd_use_preamble "pdflatex -fmt preamble "
+static char *cmd_make_preamble =
+    "pdflatex -ini -jobname=preamble \"&pdflatex\" mylatexformat.ltx ";
+static char *cmd_use_preamble = "pdflatex -synctex=1 -fmt preamble ";
+static int cmd_len = 64;
 
 // colored fprintf helper using ANSI escape codes. format_str must contain
 // exactly one '%s'.
@@ -24,7 +25,7 @@ static inline int color_fprintf(FILE *stream, char *format_str, char *str) {
     fprintf(stream, stream == stderr ? "\033[1;31m!! \033[1;37m"
                                      : "\033[1;36m:: \033[1;37m");
   fprintf(stream, format_str, str);
-  // FIXME: the two lines below should be replaced with
+  // FIXME: the two lines below should be replaceable with the more succinct
   //          if (isatty(fileno(stream)) fprintf(stream, "\033[0m");
   //        but in testing this doesn't seem to reset the color code to default
   //        :/
@@ -64,7 +65,11 @@ int main(int argc, char **argv) {
   // Watch its dir using inotify. https://unix.stackexchange.com/a/312359
   wd = inotify_add_watch(fd, dirname(file_path), IN_MODIFY | IN_DELETE);
 
-  char *cmd = malloc(64 + strlen(file_path));
+  char *cmd = malloc(cmd_len + strlen(file_path));
+  if (cmd == NULL) {
+    color_fprintf(stderr, "Memory error on malloc: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
+  }
   strcpy(cmd, cmd_make_preamble);
   strcat(cmd, file_path);
 
@@ -75,8 +80,7 @@ int main(int argc, char **argv) {
   }
   color_fprintf(stdout, "Compiled preamble.\n%s", "");
 
-  memset(cmd, 0, (50 + strlen(file_path)) * sizeof(char));
-  strcat(cmd, cmd_use_preamble);
+  strcpy(cmd, cmd_use_preamble);
   strcat(cmd, file_path);
   color_fprintf(stdout, "Compiling %s for the first time...\n", file_path);
   system(cmd);
